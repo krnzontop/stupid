@@ -154,6 +154,44 @@ end)
 
 -- FEATURES IN ORDER
 
+_G.AutoFloorCycle = false
+
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+
+local floorPositions = {
+    Vector3.new(-477.35833740234375, 11.39998722076416, -1931.170654296875),
+    Vector3.new(-475.4379577636719, 38.24997329711914, -1936.069091796875),
+    Vector3.new(-476.86102294921875, 65.5998764038086, -1931.540283203125),
+    Vector3.new(-473.6367492675781, 92.69976806640625, -1937.2435302734375),
+    Vector3.new(-475.9712219238281, 118.70933532714844, -1931.321044921875),
+    Vector3.new(-476.06878662109375, 145.29953002929688, -1934.2862548828125)
+}
+
+createButton("Auto Floor Cycle: OFF", 50, function(btn)
+    _G.AutoFloorCycle = not _G.AutoFloorCycle
+    btn.Text = _G.AutoFloorCycle and "Auto Floor Cycle: ON" or "Auto Floor Cycle: OFF"
+
+    if _G.AutoFloorCycle then
+        task.spawn(function()
+            while _G.AutoFloorCycle do
+                for i = 1, #floorPositions do
+                    if not _G.AutoFloorCycle then break end
+
+                    -- Move HRP gently to the floor center
+                    pcall(function()
+                        hrp.CFrame = CFrame.new(floorPositions[i])
+                    end)
+
+                    task.wait(10) -- your required load time
+                end
+            end
+        end)
+    end
+end)
+
+
 createButton("Auto Collect: OFF", 1, function(btn) 
     _G.AutoCollect = not _G.AutoCollect 
     btn.Text = _G.AutoCollect and "Auto Collect: ON" or "Auto Collect: OFF" 
@@ -265,7 +303,7 @@ end)
 -- AUTO BULK HATCH (FINAL)
 
 _G.AutoBulkHatch = false
-local BATCH = 2000
+local BATCH = 10000
 
 local player = game.Players.LocalPlayer
 
@@ -307,6 +345,17 @@ createButton("Auto Bulk Hatch: OFF", 10, function(btn)
             end
         end)
     end
+end)
+
+-- ================================
+-- SELL ALL BUTTON
+-- ================================
+
+local events = game:GetService("ReplicatedStorage"):WaitForChild("events")
+
+createButton("Sell All Youtubers", 999, function(btn)
+    print("[SellAll] Selling everything...")
+    events.sellAll:FireServer()
 end)
 
 -- INPUT BOX (DIRECTLY BELOW AUTO BUY)
